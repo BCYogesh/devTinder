@@ -5,19 +5,21 @@ const app = express();
 
 app.listen(3000);
 
-app.use("/admin", adminAuth);
+// use try catch for error handling
+app.get("/getAllUserData", (req, res) => {
+    try {
+        throw new Error("Error occured in our application")
+        res.send("Get user data fetched successfully");
+    } catch (err) {
+        res.status(404).send("Something went wrong contact our team")
+    }
 
-app.get("/user/login", userAuth, (req, res) => {
-    res.send("user logged in successfully");
+});
+
+app.use("/", (err, req, res, next) => {
+    res.status(404).send("Something went wrong");
 })
 
-app.get("/admin/allData", (req, res) => {
-    res.send("All data fetched successfully");
-});
-
-app.delete("/admin/deleteData", (req, res) => {
-    res.send("All data deleted successfully");
-});
 
 
 
