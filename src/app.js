@@ -1,27 +1,23 @@
 const express = require('express');
+const { adminAuth, userAuth } = require('./middlewares/Auth')
 
 const app = express();
 
 app.listen(3000);
 
-// app.get("/hello", (req, res) => {
-//     res.send("Hello from hello")
-// });
+app.use("/admin", adminAuth);
 
-// app.post("/hello", (req, res) => {
-//     res.send("data saved successfully")
-// });
+app.get("/user/login", userAuth, (req, res) => {
+    res.send("user logged in successfully");
+})
 
-app.get("/user/:userID/:name/:pass", (req, res) => {
-    console.log(req.params);
-    res.send({ firstName: "yogesh", lastName: "sekar" })
+app.get("/admin/allData", (req, res) => {
+    res.send("All data fetched successfully");
 });
 
-// all http methods request handle in this route
-app.all("/secret", (req, res) => {
-    res.send("secret routing")
+app.delete("/admin/deleteData", (req, res) => {
+    res.send("All data deleted successfully");
 });
-
 
 
 
