@@ -5,15 +5,11 @@ const User = require('./models/user');
 
 const app = express();
 
-app.post('/signup', async (req, res) => {
-    const userData = new User({
-        firstName: "Ravindra",
-        lastName: "Jadeja",
-        mailId: "Jadeja@gmail.com",
-        password: "jadeja@123",
-        gender: "Male"
-    });
+// It will handle all the request
+app.use(express.json());
 
+app.post('/signup', async (req, res) => {
+    const userData = new User(req.body);
     try {
         // return promise
         await userData.save();
@@ -21,9 +17,36 @@ app.post('/signup', async (req, res) => {
     } catch (err) {
         res.status(401).send("Something went wrong when signup to the user " + err.message)
     }
-
 });
 
+app.post("/filterUser", async (req, res) => {
+    const userEmail = req.body.mailId;
+    try {
+        const user = await User.findOne({ "mailId": userEmail });
+        if (!user) {
+            res.status(404).send("User not found");
+        } else {
+            res.send(user);
+        }
+    } catch (err) {
+        res.status(401).send("Something went wrong when filter to the user " + err.message)
+    }
+
+})
+
+
+app.get("/feed", async (req, res) => {
+    try {
+        const users = await User.find({});
+        if (!users) {
+            res.status(404).send("User not found");
+        } else {
+            res.send(users);
+        }
+    } catch (err) {
+        res.status(401).send("Something went wrong when feed the data " + err.message)
+    }
+})
 
 connectDB().then(() => {
     console.log("DB connection established successfully");
