@@ -34,7 +34,6 @@ app.post("/filterUser", async (req, res) => {
 
 })
 
-
 app.get("/feed", async (req, res) => {
     try {
         const users = await User.find({});
@@ -47,6 +46,32 @@ app.get("/feed", async (req, res) => {
         res.status(401).send("Something went wrong when feed the data " + err.message)
     }
 })
+
+app.patch("/user", async (req, res) => {
+    const userId = req.body.mailId;
+    console.log(userId)
+    const data = req.body;
+    try {
+        if (userId) {
+            await User.findByIdAndUpdate(userId, data);
+            //await User.findOneAndUpdate({ mailId: userId }, data);
+            res.send("Data updated successfully");
+        }
+    } catch (err) {
+        res.status(401).send("Something went wrong when update the data " + err.message)
+    }
+})
+
+app.delete("/deleteUser", async (req, res) => {
+    const id = req.body.userId;
+    try {
+        await User.findByIdAndDelete(id);
+        res.send("Delete the user successfully");
+    } catch (err) {
+        res.status(401).send("Something went wrong when delete the data " + err.message)
+    }
+})
+
 
 connectDB().then(() => {
     console.log("DB connection established successfully");
