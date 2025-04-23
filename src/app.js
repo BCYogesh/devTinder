@@ -2,16 +2,24 @@ const express = require('express');
 const connectDB = require('./config/database');
 const User = require('./models/user');
 
-
 const app = express();
 
 // It will handle all the request
 app.use(express.json());
 
+
 app.post('/signup', async (req, res) => {
     const userData = new User(req.body);
     try {
-        // return promise
+        const ALLOWED_UPDATES = ['photoUrl', 'about', 'gender', 'age', 'skills', 'password'];
+
+        // const isUpdateAllowed = Object.keys(userData).every((k) => {
+        //     ALLOWED_UPDATES.includes(k);
+        // })
+
+        // if (!isUpdateAllowed) {
+        //     throw new Error("Update not allowed");
+        // }
         await userData.save();
         res.send("User added successfully");
     } catch (err) {
@@ -22,6 +30,15 @@ app.post('/signup', async (req, res) => {
 app.post("/filterUser", async (req, res) => {
     const userEmail = req.body.mailId;
     try {
+        const ALLOWED_UPDATES = ['photoUrl', 'about', 'gender', 'age', 'skills', 'password'];
+
+        const isUpdateAllowed = Object.keys(data).every((k) => {
+            ALLOWED_UPDATES.includes(k);
+        })
+
+        if (!isUpdateAllowed) {
+            throw new Error("Update not allowed");
+        }
         const user = await User.findOne({ "mailId": userEmail });
         if (!user) {
             res.status(404).send("User not found");
@@ -32,7 +49,7 @@ app.post("/filterUser", async (req, res) => {
         res.status(401).send("Something went wrong when filter to the user " + err.message)
     }
 
-})
+});
 
 app.get("/feed", async (req, res) => {
     try {
@@ -47,18 +64,30 @@ app.get("/feed", async (req, res) => {
     }
 })
 
-app.patch("/user", async (req, res) => {
-    const userId = req.body.mailId;
-    console.log(userId)
+app.patch("/user/:userId", async (req, res) => {
+    const userId = req.params?.userId;
     const data = req.body;
+
     try {
-        if (userId) {
-            await User.findByIdAndUpdate(userId, data);
-            //await User.findOneAndUpdate({ mailId: userId }, data);
-            res.send("Data updated successfully");
+        const ALLOWED_UPDATES = ["photoUrl", "about", "gender", "age", "skills"];
+
+        const isUpdateAllowed = Object.keys(data).every((k) => {
+            ALLOWED_UPDATES.includes(k);
+        })
+        console.log(isUpdateAllowed);
+
+        if (!isUpdateAllowed) {
+            throw new Error("Update not allowed");
         }
+        if (data?.skills.length >= 10) {
+            throw new Error("Skills not allowed more than 10")
+        }
+        await User.findByIdAndUpdate(userId, data, { runValidators: true });
+        //await User.findOneAndUpdate({ mailId: userId }, data);
+        res.send("Data updated successfully");
+
     } catch (err) {
-        res.status(401).send("Something went wrong when update the data " + err.message)
+        res.status(401).send("Something went wrong when update the data : " + err.message)
     }
 })
 
@@ -68,9 +97,9 @@ app.delete("/deleteUser", async (req, res) => {
         await User.findByIdAndDelete(id);
         res.send("Delete the user successfully");
     } catch (err) {
-        res.status(401).send("Something went wrong when delete the data " + err.message)
+        res.status(401).send("Something went wrong when delete the data " + err.message);
     }
-})
+});
 
 
 connectDB().then(() => {
