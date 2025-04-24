@@ -1,7 +1,8 @@
 const express = require('express');
 const connectDB = require('./config/database');
 const User = require('./models/user');
-
+const userSignupValidation = require('./utils/validation');
+const bcrypt = require('bcrypt');
 const app = express();
 
 // It will handle all the request
@@ -9,23 +10,51 @@ app.use(express.json());
 
 
 app.post('/signup', async (req, res) => {
-    const userData = new User(req.body);
+
     try {
-        const ALLOWED_UPDATES = ['photoUrl', 'about', 'gender', 'age', 'skills', 'password'];
+        // validation
+        userSignupValidation(req);
 
-        // const isUpdateAllowed = Object.keys(userData).every((k) => {
-        //     ALLOWED_UPDATES.includes(k);
-        // })
+        const { firstName, lastName, emailId, password } = req.body;
 
-        // if (!isUpdateAllowed) {
-        //     throw new Error("Update not allowed");
-        // }
+        // encrypt password
+        const hashPassword = await bcrypt.hash(password, 10);
+
+        const userData = new User({
+            firstName,
+            lastName,
+            emailId,
+            password: hashPassword
+        });
+
         await userData.save();
         res.send("User added successfully");
     } catch (err) {
         res.status(401).send("Something went wrong when signup to the user " + err.message)
     }
 });
+
+app.post('/login', async (req, res) => {
+    try {
+        const { emailId, password } = req.body;
+
+        const haveUser = await User.findOne({ emailId: emailId });
+
+        if (!haveUser) {
+            throw new Error("Invalid credientials");
+        }
+
+        const isPassword = await bcrypt.compare(password, haveUser.password);
+
+        if (!isPassword) {
+            throw new Error("Invalid credientials");
+        }
+        res.send("Login successful!")
+    } catch (err) {
+        res.status(401).send("Something went wrong when login to the user : " + err.message)
+    }
+})
+
 
 app.post("/filterUser", async (req, res) => {
     const userEmail = req.body.mailId;

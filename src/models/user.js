@@ -5,19 +5,21 @@ const userSchema = new mongoose.Schema({
     firstName: {
         type: String,
         required: true,
+        min: 4,
         max: 20,
     },
     lastName: {
         type: String,
         required: true,
+        min: 4,
         max: 20,
     },
-    mailId: {
+    emailId: {
         type: String,
         unique: true,
         trim: true,
-        required: true,
         max: 50,
+        required: true,
         validate: {
             validator: function (value) {
                 if (!validator.isEmail(value)) {
@@ -55,7 +57,6 @@ const userSchema = new mongoose.Schema({
             }
         },
         trim: true,
-        required: true,
     },
     photoURL: {
         type: String,
