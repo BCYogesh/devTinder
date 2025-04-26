@@ -3,11 +3,14 @@ const connectDB = require('./config/database');
 const User = require('./models/user');
 const userSignupValidation = require('./utils/validation');
 const bcrypt = require('bcrypt');
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
+const { userAuth } = require('./middlewares/Auth')
 const app = express();
 
 // It will handle all the request
 app.use(express.json());
-
+app.use(cookieParser());
 
 app.post('/signup', async (req, res) => {
 
@@ -38,23 +41,30 @@ app.post('/login', async (req, res) => {
     try {
         const { emailId, password } = req.body;
 
-        const haveUser = await User.findOne({ emailId: emailId });
-
-        if (!haveUser) {
+        const user = await User.findOne({ emailId: emailId });
+        if (!user) {
             throw new Error("Invalid credientials");
         }
-
-        const isPassword = await bcrypt.compare(password, haveUser.password);
-
+        const isPassword = await bcrypt.compare(password, user.password);
         if (!isPassword) {
             throw new Error("Invalid credientials");
         }
+        const token = jwt.sign({ _id: user._id }, "Yogesh@123");
+        res.cookie("token", token);
         res.send("Login successful!")
     } catch (err) {
-        res.status(401).send("Something went wrong when login to the user : " + err.message)
+        res.status(401).send("ERROR : " + err.message)
     }
 })
 
+app.get('/profile', userAuth, async (req, res) => {
+    try {
+        const { loggedUser } = req;
+        res.send(loggedUser);
+    } catch (err) {
+        res.status(401).send("ERROR : " + err.message)
+    }
+})
 
 app.post("/filterUser", async (req, res) => {
     const userEmail = req.body.mailId;
@@ -80,11 +90,11 @@ app.post("/filterUser", async (req, res) => {
 
 });
 
-app.get("/feed", async (req, res) => {
+app.get("/feed", userAuth, async (req, res) => {
     try {
         const users = await User.find({});
         if (!users) {
-            res.status(404).send("User not found");
+            res.status(404).send("No data found");
         } else {
             res.send(users);
         }
@@ -103,7 +113,6 @@ app.patch("/user/:userId", async (req, res) => {
         const isUpdateAllowed = Object.keys(data).every((k) => {
             ALLOWED_UPDATES.includes(k);
         })
-        console.log(isUpdateAllowed);
 
         if (!isUpdateAllowed) {
             throw new Error("Update not allowed");
