@@ -1,6 +1,6 @@
 const validator = require('validator');
 
-const userSignupValidation = function (req) {
+const userSignupValidation = (req) => {
     const { firstName, lastName, emailId, password } = req.body;
 
     if (!firstName || !lastName) {
@@ -12,4 +12,33 @@ const userSignupValidation = function (req) {
     }
 };
 
-module.exports = userSignupValidation;
+const profileEditValidation = (req) => {
+    try {
+        const allowedEditFields = ["firstName", "lastName", "age", "gender", "photoURL", "skills", "about"];
+        const isAllowEdit = Object.keys(req.body).every((field) => allowedEditFields.includes(field));
+        if (!isAllowEdit) {
+            throw new Error("Not valid field edit request");
+        }
+        return isAllowEdit;
+    } catch (err) {
+        res.status(400).send("ERROR : " + err.message)
+    }
+}
+const profilePWDEditValidation = (req) => {
+    try {
+        const allowedEditFields = ["password"];
+        const isAllowEdit = Object.keys(req.body).every((field) => allowedEditFields.includes(field));
+        if (!isAllowEdit) {
+            throw new Error("Not valid field edit request");
+        }
+        return isAllowEdit;
+    } catch (err) {
+        res.status(400).send("ERROR : " + err.message)
+    }
+}
+
+module.exports = {
+    userSignupValidation,
+    profileEditValidation,
+    profilePWDEditValidation
+};
