@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         min: 4,
-        max: 20,
+        max: 20
     },
     lastName: {
         type: String,

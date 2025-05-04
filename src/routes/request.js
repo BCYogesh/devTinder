@@ -43,7 +43,7 @@ requestRouter.post(
 
             if (existingConnectionRequest) {
                 return res.status(400).json({
-                    message: "Connection request already exist!"
+                    message: "Connection request already exist!",
                 });
             }
 
@@ -63,5 +63,49 @@ requestRouter.post(
         }
     }
 );
+
+requestRouter.post(
+    "/request/review/:status/:requestId",
+    userAuth,
+    async (req, res) => {
+        try {
+            // status => accepted, rejected
+            const user = req.loggedUser;
+            const { status, requestId } = req.params;
+            // check status is valid
+            if (!["accepted", "rejected"].includes(status)) {
+                return res.status(400).json({
+                    message: "Invalid status type!"
+                })
+            }
+            // check requestId is valid
+            // to fetch only status should be interested otherwise don't fetch the data
+            const connectionRequest = await ConnectionRequest.findOne({
+                _id: requestId,
+                toUserId: user._id,
+                status: "interested"
+            })
+
+            if (!connectionRequest) {
+                return res.status(404).json({
+                    message: "Connection request not found!"
+                })
+            }
+
+            connectionRequest.status = status;
+
+            await connectionRequest.save();
+
+            return res.json({
+                message: `Connection ${status} successfully`
+            });
+        } catch (err) {
+            res.status(400).json({ error: "ERROR " + err.message });
+        }
+
+    }
+);
+
+
 
 module.exports = requestRouter;
