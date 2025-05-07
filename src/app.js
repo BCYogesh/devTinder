@@ -1,16 +1,25 @@
-const express = require('express');
-const connectDB = require('./config/database');
-const cookieParser = require('cookie-parser');
-const authRouter = require('./routes/auth');
-const profileRouter = require('./routes/profile');
-const requestRouter = require('./routes/request');
-const userRouter = require("./routes/user");
+var express = require('express');
+var connectDB = require('./config/database');
+var cookieParser = require('cookie-parser');
+var authRouter = require('./routes/auth');
+var profileRouter = require('./routes/profile');
+var requestRouter = require('./routes/request');
+var userRouter = require("./routes/user");
+var cors = require("cors");
 
 const app = express();
 
 // It will handle all the request
-app.use(express.json());
+
+
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}));
+
 app.use(cookieParser());
+app.use(express.json());
+
 
 app.use("/", authRouter);
 app.use("/", profileRouter);
