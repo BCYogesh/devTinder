@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 
 const profileRouter = express.Router();
 
-profileRouter.get('/profile', userAuth, async (req, res) => {
+profileRouter.get("/profile", userAuth, async (req, res) => {
     try {
         const { loggedUser } = req;
         res.send(loggedUser);
@@ -17,11 +17,14 @@ profileRouter.get('/profile', userAuth, async (req, res) => {
 profileRouter.get("/profile/view", userAuth, async (req, res) => {
     try {
         const user = req.loggedUser;
-        res.send(user);
+        res.json({
+            message: "Profile data load successfully!",
+            data: user
+        });
     } catch (err) {
-        res.status(400).send("ERROR : " + err.message)
+        res.status(401).send("ERROR : " + err.message)
     }
-})
+});
 
 profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
     try {
@@ -34,10 +37,10 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
         await loggedUser.save();
         res.send({
             message: `${loggedUser.firstName} your profile has been updated.`,
-            data: [loggedUser]
+            data: loggedUser
         })
     } catch (err) {
-        res.status(400).send("ERROR : " + err.message)
+        res.status(400).send("ERROR edit : " + err.message)
     }
 
 });
@@ -60,6 +63,6 @@ profileRouter.patch("/profile/password", userAuth, async (req, res) => {
     } catch (err) {
         res.status(400).send("ERROR : " + err.message)
     }
-})
+});
 
 module.exports = profileRouter;

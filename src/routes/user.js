@@ -5,7 +5,7 @@ const User = require("../models/user");
 
 const userRouter = express.Router();
 
-const USER_SAFE_FIELDS = "firstName lastName skills about";
+const USER_SAFE_FIELDS = "firstName lastName skills about photoURL age gender";
 
 
 userRouter.get("/user/requests/received", userAuth, async (req, res) => {
@@ -99,7 +99,7 @@ userRouter.get("/feed", userAuth, async (req, res) => {
 
         res.json({
             message: "Feed fetch successfully!",
-            data: users
+            users
         });
     } catch (err) {
         res.status(400).json({ message: err.message });

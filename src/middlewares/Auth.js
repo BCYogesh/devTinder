@@ -1,6 +1,3 @@
-// I have to check all the methods for who is admin or not
-// This code is example for middleware
-
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
