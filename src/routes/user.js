@@ -59,13 +59,22 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
             });
         }
 
+
+        const users = connections?.map((connection) => {
+            if (connection?.fromUserId?._id.toString() == loggedUser?._id.toString()) {
+                return connection?.toUserId;
+            };
+            return connection?.fromUserId;
+        })
+
         return res.json({
             message: "Connections fetched successfully!",
-            data: connections,
+            data: users,
         });
     } catch (err) {
         return res.status(400).json({ message: err.message });
     }
+
 });
 
 userRouter.get("/feed", userAuth, async (req, res) => {

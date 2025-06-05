@@ -6,7 +6,6 @@ const { userSignupValidation } = require('../utils/validation');
 
 const authRouter = express.Router();
 
-
 authRouter.post('/signup', async (req, res) => {
     try {
         // validation
@@ -21,7 +20,11 @@ authRouter.post('/signup', async (req, res) => {
             password: hashPassword
         });
         await userData.save();
-        res.send("User added successfully");
+        const token = await userData.getJWT();
+        res.cookie("token", token, {
+            expires: new Date(Date.now() + 24000000),
+        })
+        res.json({ message: "User added successfully", data: userData });
     } catch (err) {
         res.status(401).send("ERROR : " + err.message)
     }
