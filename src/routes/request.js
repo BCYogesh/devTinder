@@ -54,6 +54,7 @@ requestRouter.post(
             });
 
             await connectionReq.save();
+
             res.json({
                 message: "Connection request sent sucessfully!",
                 response: `${user.firstName} is ${status} in ${toUserData.firstName}`,
