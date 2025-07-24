@@ -9,6 +9,7 @@ const cors = require("cors");
 const http = require("http");
 const initializeSocket = require('./utils/socket');
 const chatRouter = require('./routes/chat');
+const session = require('express-session');
 
 
 require('dotenv').config()
