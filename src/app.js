@@ -41,6 +41,17 @@ app.use(cors({
 // }));
 
 app.use(cookieParser());
+app.use(session({
+    secret: "mySuperSecretKeyThatIsLongAndSecure123!",  // use strong key in real apps
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        sameSite: "none",  // Important for cross-origin
+        secure: true       // Must be true if you're using HTTPS (Netlify + Render)
+    }
+}));
+
 app.use(express.json());
 
 app.use("/", authRouter);
