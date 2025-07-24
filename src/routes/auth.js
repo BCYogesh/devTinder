@@ -22,6 +22,9 @@ authRouter.post('/signup', async (req, res) => {
         await userData.save();
         const token = await userData.getJWT();
         res.cookie("token", token, {
+            httpOnly: true,       // prevents JS access on frontend
+            secure: true,         // required if using HTTPS (which you are)
+            sameSite: "None",       // required for cross-site cookie
             expires: new Date(Date.now() + 24000000),
         })
         res.json({ message: "User added successfully", data: userData });
@@ -44,6 +47,9 @@ authRouter.post('/login', async (req, res) => {
         const token = await user.getJWT();
 
         res.cookie("token", token, {
+            httpOnly: true,       // prevents JS access on frontend
+            secure: true,         // required if using HTTPS (which you are)
+            sameSite: "None",       // required for cross-site cookie
             expires: new Date(Date.now() + 24000000),
         });
         res.json({
@@ -58,6 +64,9 @@ authRouter.post('/login', async (req, res) => {
 
 authRouter.get("/logout", async (req, res) => {
     res.cookie("token", null, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
         expires: new Date(Date.now())
     });
     res.send("Logout success");
