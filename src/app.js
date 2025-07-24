@@ -19,10 +19,26 @@ const app = express();
 
 const httpServer = http.createServer(app);
 
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://resilient-kulfi-91a455.netlify.app"
+];
+
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
     credentials: true
 }));
+
+// app.use(cors({
+//     origin: "http://localhost:5173",
+//     credentials: true
+// }));
 
 app.use(cookieParser());
 app.use(express.json());
