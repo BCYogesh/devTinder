@@ -8,9 +8,15 @@ const getSecretRoomId = (userId, targetUserId) => {
 }
 
 const initializeSocket = (server) => {
+    const allowedOrigins = [
+        "http://localhost:5173",
+        "https://resilient-kulfi-91a455.netlify.app"
+    ];
     const io = socket(server, {
         cors: {
-            origin: "http://localhost:5173",
+            origin: allowedOrigins,
+            methods: ["GET", "POST"],
+            credentials: true
         }
     });
 
