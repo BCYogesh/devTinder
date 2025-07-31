@@ -21,7 +21,7 @@ const httpServer = http.createServer(app);
 
 const allowedOrigins = [
     "http://localhost:5173",
-    "https://resilient-kulfi-91a455.netlify.app"
+    "https://tinderfordevs.netlify.app/"
 ];
 
 app.use(cors({
@@ -34,11 +34,6 @@ app.use(cors({
     },
     credentials: true
 }));
-
-// app.use(cors({
-//     origin: "http://localhost:5173",
-//     credentials: true
-// }));
 
 app.use(cookieParser());
 
