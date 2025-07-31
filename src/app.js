@@ -21,7 +21,7 @@ const httpServer = http.createServer(app);
 
 const allowedOrigins = [
     "http://localhost:5173",
-    "https://tinderfordevs.netlify.app/"
+    "https://tinderfordevs.netlify.app"
 ];
 
 app.use(cors({
