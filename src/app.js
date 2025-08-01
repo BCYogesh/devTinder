@@ -19,12 +19,13 @@ const app = express();
 
 const httpServer = http.createServer(app);
 
-app.options("*", cors({
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://resilient-kulfi-91a455.netlify.app"
+];
+
+app.use(cors({
     origin: function (origin, callback) {
-        const allowedOrigins = [
-            "http://localhost:5173",
-            "https://resilient-kulfi-91a455.netlify.app"
-        ];
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
