@@ -10,7 +10,8 @@ const getSecretRoomId = (userId, targetUserId) => {
 const initializeSocket = (server) => {
     const allowedOrigins = [
         "http://localhost:5173",
-        "https://tinderfordevs.netlify.app"
+        "https://tinderfordevs.netlify.app",
+        "https://www.tinderfordevs.netlify.app"
     ];
     const io = socket(server, {
         cors: {
